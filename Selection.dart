@@ -1,89 +1,102 @@
 import 'dart:io';
 
-var mentors = new List();
+List<Test> mentors = [];
 
 class Test {
-  var roles;
-  var skills = new List();
-  var time;
 
-  //Stores the various available technical skills
+  var roles;
+  var skills = [];
+  int time; 
+
   void addStacks() {
+
     print("Enter skill: ");
     var field = stdin.readLineSync();
     skills.add(field);
   }
 
-  //Determines whether a participant is a learner or a mentor
   void setMentorOrLearner() {
-    print("Enter designation\n1. Mentor\n2. Learner\nChoice: ");
-    roles = stdin.readLineSync();
-    if (roles.trim() == '1')
-      roles = 'mentor';
-    else if (roles.trim() == '2') roles = 'learner';
-  }
 
-  //Gets the available time of a mentor
-  void setAvailableTime() {
-    if (roles == 'mentor') {
-      print("Enter the available time for this mentor in minutes : ");
-      time = stdin.readByteSync();
-    } else {
-      print("This option is only for mentors\n");
+    stdout.writeln("Enter designation:\n1. Mentor\n2. Learner");
+    var choice = int.parse(stdin.readLineSync());
+
+    if(choice == 1) 
+      roles = 'mentor';
+    else if(choice == 2) 
+      roles = 'learner';
+    else {
+      print("Invalid choice");
+      exit(0);
     }
   }
 
-  //Determines for a learner if a mentor is available based on skillset and time
-  void getMentor(skills, check) {
-    if (roles == 'learner') {
+  void setAvailableTime() {
+
+    if(roles == 'mentor') {
+      stdout.writeln("Enter the available time in minutes:");
+      time = int.parse(stdin.readLineSync());
+    }
+    else
+      print("This is not available for Learners.");
+  }
+
+  void getMentor(interests, check) {
+
+    if(roles == 'learner') {
       bool flag = true;
-      for (final interest in skills) {
-        for (final mentor in mentors) {
-          if (check <= mentor.time) {
-            for (final skill in mentor.skills) {
-              if (skill == interest) {
-                print("Mentor found!\n");
+      for(var i in interests) {
+        for(var mentor in mentors) {
+          if(check <= mentor.time) {
+            for(var fields in mentor.skills) {
+              if(fields == i) {
                 flag = false;
+                print("Mentor found for $i");
               }
             }
           }
         }
       }
-      if (flag) {
-        print("Mentor is not available!\n");
-      }
-    } else {
-      print("This option is only for learners\n");
+
+      if(flag)
+        print("No Mentor available.");
     }
+    else
+      print("This is not available for Mentors.");
   }
 }
 
 void main() {
-  while (true) {
+
+  while(true) {
+
     Test obj = Test();
     obj.setMentorOrLearner();
-    if (obj.roles == 'mentor') {
-      print("Enter your top 3 skills\n");
-      for (var i = 0; i < 3; ++i) {
+    if(obj.roles == 'mentor') {
+
+      print("Enter area of expertise");
+      for(var i = 0; i < 3; i++) {
         obj.addStacks();
       }
       obj.setAvailableTime();
       mentors.add(obj);
-    } else if (obj.roles == 'learner') {
-      print("Enter top 3 skills to be learnt\n");
-      for (var i = 0; i < 3; ++i) {
+    }
+    else {
+
+      print("Enter area of interest");
+      for(var i = 0; i < 3; i++) {
         obj.addStacks();
       }
-      print("Enter time: ");
-      var time = stdin.readLineSync();
+      stdout.writeln("Enter time slot:");
+      int time = int.parse(stdin.readLineSync());
+
       obj.getMentor(obj.skills, time);
     }
 
+
     print("Do you want to exit?(Y/N)");
     String flag = stdin.readLineSync();
-    flag = flag.toUpperCase();
-    flag = flag.trim();
-    if (flag == 'N') {
+    flag = flag.toUpperCase().trim();
+    if (flag == 'Y') {
       exit(0);
     }
   }
